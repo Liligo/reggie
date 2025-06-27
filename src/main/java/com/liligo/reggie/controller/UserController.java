@@ -11,12 +11,14 @@ import com.liligo.reggie.utils.ValidateCodeUtils;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 
 @Slf4j
@@ -26,14 +28,16 @@ public class UserController {
     @Autowired
     public UserService userService;
 
+    @Autowired
+    public RedisTemplate<String, Object> redisTemplate;
+
     /**
      * 发送短信验证码
      * @param user 用户信息，包含手机号
-     * @param session HttpSession对象，用于存储验证码
      * @return 返回操作结果
      */
     @PostMapping("/sendMsg")
-    public Result<String> sendMsg(@RequestBody User user, HttpSession session) {
+    public Result<String> sendMsg(@RequestBody User user) {
         String signName = "阿里云短信测试"; // 短信签名
         String templateCode = "SMS_154950909"; // 短信模板Code
 
@@ -49,28 +53,29 @@ public class UserController {
         // 3. 调用短信服务API发送验证码
         SMSUtils.sendMessage(signName, templateCode, phone, validateCode);
 
-        // 4. 暂时先将验证码保存到session（将验证码保存到Redis中，设置有效期为5分钟）
+        // 4. 将验证码保存到Redis中，设置有效期为5分钟
         // phone作为key，验证码作为value
-        session.setAttribute(phone, validateCode);
+        redisTemplate.opsForValue().set(phone, validateCode, 5, TimeUnit.MINUTES);
+
 
         return Result.success("短信发送成功");
     }
 
     /**
      * 用户登录
-     *
-     * @param map
-     * @param session
-     * @return
+     * @param map 包含手机号(phone)和验证码(code)的键值对
+     * @param session 用于存储用户登录状态的会话对象
+     * @return 返回登录用户信息
      */
     @PostMapping("/login")
-    public Result<User> login(@RequestBody Map map, HttpSession session) { // 使用map接受前端传送的phone和code
+    public Result<User> login(@RequestBody Map<String, String> map, HttpSession session) { // 添加泛型参数
         log.info("login: {}", map);
         // 1. 获取手机号和验证码
-        String phone = map.get("phone").toString();
-        String code = map.get("code").toString();
-        // 2. 从session中获取验证码
-        String codeInSession = (String) session.getAttribute(phone);
+        String phone = map.get("phone");
+        String code = map.get("code");
+
+        // 2. 从Redis中获取验证码
+        String codeInSession = (String) redisTemplate.opsForValue().get(phone);
 
         // 3. 校验验证码
         if (codeInSession == null || !codeInSession.equals(code)) {
@@ -90,13 +95,16 @@ public class UserController {
 
         // 登录成功，将用户id存入session
         session.setAttribute("user", user.getId());
+        // 清除验证码，避免重复使用
+        redisTemplate.delete(phone);
 
         return Result.success(user);
     }
 
     /**
      * 用户登出
-     * @return
+     * @param session 当前用户会话
+     * @return 返回退出结果
      */
     @PostMapping("/loginout")
     public Result<String> loginout(HttpSession session){

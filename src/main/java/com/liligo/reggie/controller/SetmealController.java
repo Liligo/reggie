@@ -6,18 +6,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.liligo.reggie.common.Result;
 import com.liligo.reggie.dto.SetmealDto;
 import com.liligo.reggie.entity.Setmeal;
-import com.liligo.reggie.entity.SetmealDish;
 import com.liligo.reggie.service.CategoryService;
-import com.liligo.reggie.service.SetmealDishService;
 import com.liligo.reggie.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 
 @Slf4j
@@ -28,8 +27,6 @@ public class SetmealController {
     @Autowired
     private SetmealService setmealService;
     @Autowired
-    private SetmealDishService setmealDishService;
-    @Autowired
     private CategoryService categoryService;
 
     /**
@@ -38,6 +35,7 @@ public class SetmealController {
      * @return 成功消息
      */
     @PostMapping
+    @CacheEvict(value = "setmealCache", allEntries = true)
     public Result<String> add(@RequestBody SetmealDto setmealDto) {
         log.info("新增套餐: {}", setmealDto);
 
@@ -55,7 +53,7 @@ public class SetmealController {
      * @return 分页查询结果
      */
     @GetMapping("/page")
-    public Result<Page> page(int page, int pageSize, String name) {
+    public Result<Page<SetmealDto>> page(int page, int pageSize, String name) {
         log.info("page = {}, pageSize = {}, name = {}", page, pageSize, name);
         // 构造分页查询条件
         Page<Setmeal> setmealPage = new Page<>(page, pageSize);
@@ -90,6 +88,7 @@ public class SetmealController {
      * @return 套餐数据传输对象
      */
     @GetMapping("/list")
+    @Cacheable(value = "setmealCache", key = "#setmeal.categoryId + '_' + #setmeal.status")
     public Result<List<Setmeal>> list(Setmeal setmeal) {
         // 设置查询条件
         LambdaQueryWrapper<Setmeal> setmealQueryWrapper = new LambdaQueryWrapper<>();
@@ -108,6 +107,7 @@ public class SetmealController {
      * @param ids  套餐ID列表
      */
     @DeleteMapping
+    @CacheEvict(value = "setmealCache", allEntries = true)
     public Result<String> delete(@RequestParam List<Long> ids) {
         log.info("删除套餐: {}", ids);
 

@@ -31,9 +31,6 @@ public class UserController {
     @Autowired
     public RedisTemplate<String, Object> redisTemplate;
 
-    // 删除未使用的字段
-    // @Autowired private RedisConnectionDetails redisConnectionDetails;
-
     /**
      * 发送短信验证码
      * @param user 用户信息，包含手机号

@@ -64,18 +64,7 @@
 			</exclusions>
 		</dependency>
 
-		<!-- Mybatis -->
-		<!-- 移除原生 MyBatis 依赖 -->
-		<!--
-		<dependency>
-		    <groupId>org.mybatis.spring.boot</groupId>
-		    <artifactId>mybatis-spring-boot-starter</artifactId>
-		    <version>3.0.3</version>
-		</dependency>
-		-->
-
-		<!-- 更新 MyBatis-Plus 版本并移除冲突依赖 -->
-		<!-- 修改MyBatis-Plus依赖 -->
+		<!-- MyBatis-Plus -->
 		<dependency>
 		    <groupId>com.baomidou</groupId>
 		    <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
@@ -126,11 +115,11 @@
 			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
 
-		<!-- Knife4j -->
+		<!-- Knife4j Spring Boot 3 Starter -->
 		<dependency>
-			<groupId>com.github.xiaoymin</groupId>
-			<artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-			<version>4.4.0</version>
+		    <groupId>com.github.xiaoymin</groupId>
+		    <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+		    <version>4.5.0</version>
 		</dependency>
 
 		<!-- Fastjson -->

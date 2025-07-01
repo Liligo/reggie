@@ -2,8 +2,10 @@ package com.liligo.reggie.common;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
@@ -30,25 +32,25 @@ public class JacksonObjectMapper extends ObjectMapper {
 
     public JacksonObjectMapper() {
         super();
-        //收到未知属性时不报异常
         this.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        //反序列化时，属性不存在的兼容处理
         this.getDeserializationConfig().withoutFeatures(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
+        // 移除重复的JavaTimeModule注册
+        // this.registerModule(new JavaTimeModule());  // 删除此行
 
+        // 配置JavaTimeModule的日期格式
+        JavaTimeModule javaTimeModule = new JavaTimeModule();
+        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT)));
+        javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT)));
+
+        this.registerModule(javaTimeModule);  // 注册带格式配置的JavaTimeModule
+        this.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+        // 简化SimpleModule配置（移除日期相关序列化器）
         SimpleModule simpleModule = new SimpleModule()
-                .addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT)))
-                .addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)))
-                .addDeserializer(LocalTime.class, new LocalTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_TIME_FORMAT)))
-
                 .addSerializer(BigInteger.class, ToStringSerializer.instance)
-                .addSerializer(Long.class, ToStringSerializer.instance)
-                .addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT)))
-                .addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)))
-                .addSerializer(LocalTime.class, new LocalTimeSerializer(DateTimeFormatter.ofPattern(DEFAULT_TIME_FORMAT)));
+                .addSerializer(Long.class, ToStringSerializer.instance);
 
-        //注册功能模块 例如，可以添加自定义序列化器和反序列化器
         this.registerModule(simpleModule);
     }
 }

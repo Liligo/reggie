@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # deploy-docker.sh
 
@@ -7,6 +7,8 @@ APP_NAME="reggie"
 IMAGE_NAME="liligo/${APP_NAME}:latest"
 CONTAINER_NAME="${APP_NAME}-container"
 GIT_REPO_URL="https://github.com/Liligo/reggie.git"
+PROJECT_DIR="reggie" # 新增：用于存放源码的子目录
+
 # 环境变量文件名，部署时会加载这个文件
 ENV_FILE="prod.env"
 
@@ -17,6 +19,7 @@ CONTAINER_PORT=8080
 LOG_FILE="deploy.log"
 
 # --- 脚本执行区 ---
+# 将标准输出和标准错误都重定向到控制台和日志文件
 exec > >(tee -i $LOG_FILE)
 exec 2>&1
 
@@ -33,13 +36,18 @@ check_status() {
 }
 
 echo "步骤 1: 更新或克隆 Git 仓库..."
-if [ -d ".git" ]; then
-    echo "Git 仓库已存在，执行 git pull..."
+if [ -d "$PROJECT_DIR/.git" ]; then
+    echo "Git 仓库已存在，进入目录并执行 git pull..."
+    cd ${PROJECT_DIR}
+    check_status
     git pull
     check_status
 else
-    echo "Git 仓库不存在，执行 git clone..."
-    git clone ${GIT_REPO_URL} .
+    echo "Git 仓库不存在，删除旧目录并重新克隆..."
+    rm -rf ${PROJECT_DIR}
+    git clone ${GIT_REPO_URL} ${PROJECT_DIR}
+    check_status
+    cd ${PROJECT_DIR}
     check_status
 fi
 echo "代码更新/克隆完成。"
@@ -63,9 +71,14 @@ else
 fi
 
 echo "步骤 4: 构建 Docker 镜像..."
+# 注意：我们现在在 PROJECT_DIR 目录内执行构建
 docker build -t ${IMAGE_NAME} .
 check_status
 echo "镜像 ${IMAGE_NAME} 构建成功。"
+
+# 返回到上层目录，以便访问 prod.env
+cd ..
+check_status
 
 echo "步骤 5: 创建宿主机持久化目录..."
 mkdir -p ${UPLOAD_DIR}

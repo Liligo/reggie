@@ -13,16 +13,21 @@ import com.liligo.reggie.service.DishService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+
 
 @Slf4j
 @RestController
 @RequestMapping("/dish")
+@CacheConfig(cacheNames = "dishCache")
 public class DishController {
 
     @Autowired
@@ -31,8 +36,6 @@ public class DishController {
     private CategoryService categoryService;
     @Autowired
     private DishFlavorService dishFlavorService;
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
 
     /**
      * 新增菜品接口
@@ -41,13 +44,10 @@ public class DishController {
      * @return a Result object indicating success or failure
      */
     @PostMapping
+    @CacheEvict(allEntries = true)  // 清除所有缓存
     public Result<String> addDish(@RequestBody DishDto dishDto) {
         //log.info("Adding new dish: {}", dishDto);
         dishService.addWithFlavor(dishDto);
-
-        // 清理当前菜品所属分类的Redis缓存
-        String key = "dish_list_" + dishDto.getCategoryId() + "_1";
-        redisTemplate.delete(key);
 
         return Result.success("新增菜品成功");
     }
@@ -63,9 +63,7 @@ public class DishController {
         log.info("Querying dish by id: {}", id);
         DishDto dishDto = dishService.getByIdWithCategory(id);
 
-
         return Result.success(dishDto);
-
     }
 
     /**
@@ -75,14 +73,15 @@ public class DishController {
      * @return a Result object indicating success or failure
      */
     @PutMapping
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "localCache", allEntries = true), // 清除一级缓存
+            @CacheEvict(cacheNames = "dishCache", key = "#dishDto.categoryId + '_' + #dishDto.status")  // 清除二级缓存
+    })
     public Result<String> update(@RequestBody DishDto dishDto) {
         log.info("Updating dish: {}", dishDto);
 
         dishService.updateWithFlavor(dishDto);
-
-        // 清理当前菜品所属分类的Redis缓存
-        String key = "dish_list_" + dishDto.getCategoryId() + "_1";
-        redisTemplate.delete(key);
 
         return Result.success("修改菜品成功");
     }
@@ -147,34 +146,26 @@ public class DishController {
      * @return a Result object containing a list of DishDto objects
      */
     @GetMapping("/list")
+    @Caching(cacheable = {
+            @Cacheable(cacheNames = "localCache", key = "#dish.categoryId + '_' + #dish.status", condition = "#dish.status == 1"),
+            @Cacheable(cacheNames = "dishCache", key = "#dish.categoryId + '_' + #dish.status", unless = "#result.data.isEmpty()")
+        }
+    )
     public Result<List<DishDto>> list(Dish dish) {
         log.info("Querying dish list with criteria: {}", dish);
 
-        List<DishDto> dishDtoList;
-        // 先从Redis中查询菜品列表
-        String redisKey = "dish_list_" + dish.getCategoryId() + "_" + dish.getStatus();
-        @SuppressWarnings("unchecked") // 使用@SuppressWarnings注解明确告知编译器该转换是安全的
-        List<DishDto> cachedList = (List<DishDto>) redisTemplate.opsForValue().get(redisKey);
-        dishDtoList = cachedList;
-
-        // 1 若存在，则直接返回
-        if (dishDtoList != null) {
-            return Result.success(dishDtoList);
-        }
-
-        // 2 若不存在，则查询数据库并存入Redis，并返回结果
-        // 2.1 创建条件构造器
+        // 创建条件构造器
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
-        // 2.2 添加查询条件
+        // 添加查询条件
         queryWrapper.eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId());
         queryWrapper.eq(Dish::getStatus,1); // 只查询状态为1（启售）的菜品
-        // 2.3 添加排序条件
+        // 添加排序条件
         queryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
 
         List<Dish> dishList =  dishService.list(queryWrapper);
 
-        // 2.4 遍历菜品列表，设置分类名称和口味信息
-        dishDtoList = new ArrayList<>();
+        // 遍历菜品列表，设置分类名称和口味信息
+        List<DishDto> dishDtoList = new ArrayList<>();
         for (Dish dishItem : dishList) {
             DishDto dishDto = new DishDto();
             // 拷贝属性
@@ -194,8 +185,6 @@ public class DishController {
             dishDtoList.add(dishDto);
         }
 
-        // 2.5 将查询结果存入Redis，设置有效期为1小时
-        redisTemplate.opsForValue().set(redisKey, dishDtoList, 1, TimeUnit.HOURS);
         return Result.success(dishDtoList);
     }
 }

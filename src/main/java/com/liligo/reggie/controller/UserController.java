@@ -11,25 +11,24 @@ import com.liligo.reggie.utils.ValidateCodeUtils;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 
 @Slf4j
 @RestController
 @RequestMapping("/user")
+@CacheConfig(cacheNames = "userCache")
 public class UserController {
     @Autowired
     public UserService userService;
-
-    @Autowired
-    public RedisTemplate<String, Object> redisTemplate;
 
     /**
      * 发送短信验证码
@@ -37,11 +36,11 @@ public class UserController {
      * @return 返回操作结果
      */
     @PostMapping("/sendMsg")
+    @CachePut(key = "#user.phone", unless = "#result.code != 1") // 缓存登录验证码
     public Result<String> sendMsg(@RequestBody User user) {
         String signName = "阿里云短信测试"; // 短信签名
         String templateCode = "SMS_154950909"; // 短信模板Code
 
-        log.info("phone: {}", user);
         // 1. 获取手机号
         String phone = user.getPhone();
         if (StringUtils.isEmpty(phone)) {
@@ -53,11 +52,6 @@ public class UserController {
         // 3. 调用短信服务API发送验证码
         SMSUtils.sendMessage(signName, templateCode, phone, validateCode);
 
-        // 4. 将验证码保存到Redis中，设置有效期为5分钟
-        // phone作为key，验证码作为value
-        redisTemplate.opsForValue().set(phone, validateCode, 5, TimeUnit.MINUTES);
-
-
         return Result.success("短信发送成功");
     }
 
@@ -68,20 +62,14 @@ public class UserController {
      * @return 返回登录用户信息
      */
     @PostMapping("/login")
+    @CacheEvict(key = "#map['phone']")  // 登录成功后清除验证码缓存
     public Result<User> login(@RequestBody Map<String, String> map, HttpSession session) { // 添加泛型参数
         log.info("login: {}", map);
-        // 1. 获取手机号和验证码
+        // 获取手机号和验证码
         String phone = map.get("phone");
         String code = map.get("code");
 
-        // 2. 从Redis中获取验证码
-        String codeInSession = (String) redisTemplate.opsForValue().get(phone);
-
-        // 3. 校验验证码
-        if (codeInSession == null || !codeInSession.equals(code)) {
-            return Result.error("验证码错误");
-        }
-        // 4.校验手机号是否注册
+        // 校验手机号是否注册
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getPhone, phone);
         User user = userService.getOne(queryWrapper);
@@ -95,8 +83,6 @@ public class UserController {
 
         // 登录成功，将用户id存入session
         session.setAttribute("user", user.getId());
-        // 清除验证码，避免重复使用
-        redisTemplate.delete(phone);
 
         return Result.success(user);
     }

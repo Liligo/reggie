@@ -109,10 +109,23 @@
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
 
+		<!-- Caffeine -->
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+			<version>3.1.8</version>
+		</dependency>
+
 		<!-- Spring Cache -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
+
+		<!-- Jackson 支持 Java 8+ 日期时间 API -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
 		</dependency>
 
 		<!-- Knife4j Spring Boot 3 Starter -->

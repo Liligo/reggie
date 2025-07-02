@@ -11,7 +11,6 @@ import com.liligo.reggie.utils.ValidateCodeUtils;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +24,6 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/user")
-@CacheConfig(cacheNames = "userCache")
 public class UserController {
     @Autowired
     public UserService userService;
@@ -36,7 +34,7 @@ public class UserController {
      * @return 返回操作结果
      */
     @PostMapping("/sendMsg")
-    @CachePut(key = "#user.phone", unless = "#result.code != 1") // 缓存登录验证码
+    @CachePut(value = "userCache", key = "#user.phone", unless = "#result.code != 1") // 缓存登录验证码
     public Result<String> sendMsg(@RequestBody User user) {
         String signName = "阿里云短信测试"; // 短信签名
         String templateCode = "SMS_154950909"; // 短信模板Code
@@ -62,7 +60,7 @@ public class UserController {
      * @return 返回登录用户信息
      */
     @PostMapping("/login")
-    @CacheEvict(key = "#map['phone']")  // 登录成功后清除验证码缓存
+    @CacheEvict(value = "userCache", key = "#map['phone']")  // 登录成功后清除验证码缓存
     public Result<User> login(@RequestBody Map<String, String> map, HttpSession session) { // 添加泛型参数
         log.info("login: {}", map);
         // 获取手机号和验证码

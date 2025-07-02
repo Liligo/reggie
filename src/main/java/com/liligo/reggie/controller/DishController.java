@@ -73,11 +73,7 @@ public class DishController {
      * @return a Result object indicating success or failure
      */
     @PutMapping
-    @Transactional
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "localCache", allEntries = true), // 清除一级缓存
-            @CacheEvict(cacheNames = "dishCache", key = "#dishDto.categoryId + '_' + #dishDto.status")  // 清除二级缓存
-    })
+    @CacheEvict(cacheNames = "dishCache", key = "#dishDto.categoryId + '_' + #dishDto.status")  // 清除相关分类菜品缓存
     public Result<String> update(@RequestBody DishDto dishDto) {
         log.info("Updating dish: {}", dishDto);
 
@@ -146,11 +142,7 @@ public class DishController {
      * @return a Result object containing a list of DishDto objects
      */
     @GetMapping("/list")
-    @Caching(cacheable = {
-            @Cacheable(cacheNames = "localCache", key = "#dish.categoryId + '_' + #dish.status", condition = "#dish.status == 1"),
-            @Cacheable(cacheNames = "dishCache", key = "#dish.categoryId + '_' + #dish.status", unless = "#result.data.isEmpty()")
-        }
-    )
+    @Cacheable(cacheNames = "dishCache", key = "#dish.categoryId + '_' + #dish.status", unless = "#result.data.isEmpty()")
     public Result<List<DishDto>> list(Dish dish) {
         log.info("Querying dish list with criteria: {}", dish);
 

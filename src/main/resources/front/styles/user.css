@@ -1,206 +1,358 @@
+body {
+  background: #f6f6f6;
+}
+
 #user {
-  height: 100%;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background: #f6f6f6;
 }
 
 #user .divHead {
-  width: 100%;
-  height: 164rem;
+  height: 130rem;
   opacity: 1;
-  background: #ffc200;
-  box-sizing: border-box;
-  padding-left: 12rem;
-  padding-right: 12rem;
-}
-
-#user .divHead .divTitle {
-  height: 25rem;
-  opacity: 1;
-  font-size: 18rem;
-  font-family: PingFangSC, PingFangSC-Regular;
-  font-weight: 500;
-  text-align: center;
-  color: #333333;
-  line-height: 25rem;
-  letter-spacing: 0;
-  padding-top: 50rem;
-  margin-bottom: 18rem;
-  position: relative;
-}
-
-#user .divHead .divTitle i {
-  position: absolute;
-  left: 0;
-  margin-top: 5rem;
-}
-
-#user .divHead .divUser {
-  display: flex;
-}
-
-#user .divHead .divUser > img {
-  width: 58rem;
-  height: 58rem;
-  border-radius: 50%;
-  margin-right: 16rem;
-}
-
-#user .divHead .divUser .desc {
+  background: linear-gradient(90deg, #ff6b35, #ff6b35);
+  border-radius: 0 0 30rem 30rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  position: relative;
 }
 
-#user .divHead .divUser .desc .divName {
-  opacity: 1;
+#user .divHead .divTitle {
+  width: 100%;
+  height: 30rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: absolute;
+  top: 30rem;
+  left: 0;
+  padding: 0 20rem;
+  box-sizing: border-box;
+}
+
+#user .divHead .divTitle i {
+  font-size: 20rem;
+  color: #ffffff;
+}
+
+#user .divHead .divTitle .el-icon-arrow-left {
+  font-size: 24rem;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+#user .divHead .divTitle {
+  font-size: 18rem;
+  font-family: PingFangSC, PingFangSC-Regular;
+  font-weight: 500;
+  color: #ffffff;
+  line-height: 25rem;
+}
+
+#user .divHead .divUser {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20rem;
+}
+
+#user .divHead .divUser img {
+  width: 60rem;
+  height: 60rem;
+  border-radius: 50%;
+}
+
+#user .divHead .divUser .desc {
+  margin-left: 20rem;
+}
+
+#user .divHead .divUser .desc .userName {
   font-size: 16rem;
   font-family: PingFangSC, PingFangSC-Regular;
   font-weight: 500;
-  text-align: left;
-  color: #333333;
-  margin-right: 6rem;
-  margin-bottom: 5rem;
-  display: flex;
-  align-items: center;
+  color: #ffffff;
+  line-height: 22rem;
 }
 
-#user .divHead .divUser .desc .divName img {
-  width: 16rem;
-  height: 16rem;
-  opacity: 1;
-  margin-left: 6rem;
-}
-
-#user .divHead .divUser .desc .divPhone {
-  font-size: 14px;
+#user .divHead .divUser .desc .userPhone {
+  font-size: 14rem;
   font-family: PingFangSC, PingFangSC-Regular;
   font-weight: 400;
-  text-align: left;
-  color: #333333;
+  color: #ffffff;
+  line-height: 20rem;
+  margin-top: 4rem;
 }
 
 #user .divContent {
-  height: calc(100% - 174rem);
-  overflow-y: auto;
+  padding: 20rem;
+  background: #f6f6f6;
 }
 
-#user .divLinks {
-  height: 104rem;
-  opacity: 1;
+#user .divContent .divLinks {
   background: #ffffff;
   border-radius: 6rem;
-  padding-left: 17rem;
-  padding-right: 11rem;
-  margin: 10rem;
+  padding: 0 20rem;
+  margin-bottom: 20rem;
 }
 
-#user .divLinks .item {
-  height: 51rem;
-  line-height: 51rem;
-  position: relative;
+#user .divContent .divLinks .item {
+  height: 50rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+#user .divContent .divLinks .item .left {
   display: flex;
   align-items: center;
 }
 
-#user .divLinks .divSplit {
-  height: 1rem;
-  opacity: 1;
-  background-color: #ebebeb;
-  border: 0;
+#user .divContent .divLinks .item .left i {
+  font-size: 20rem;
+  color: #ff6b35;
+  margin-right: 10rem;
 }
 
-#user .divLinks .item img {
-  width: 18rem;
-  height: 18rem;
-  margin-right: 5rem;
+#user .divContent .divLinks .item span {
+  font-size: 16rem;
+  font-family: PingFangSC, PingFangSC-Regular;
+  font-weight: 400;
+  color: #333;
 }
 
-#user .divLinks .item i {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translate(0, -50%);
+#user .divContent .divLinks .item .el-icon-arrow-right {
+  font-size: 16rem;
+  color: #999;
 }
 
+#user .divContent .divLinks .divSplit {
+  height: 1px;
+  background: #f0f0f0;
+}
+
+/* 订单显示区域 */
 #user .divOrders {
-  margin: 0 10rem 10rem 10rem;
   background: #ffffff;
   border-radius: 6rem;
-  padding-left: 10rem;
-  padding-right: 10rem;
-  padding-bottom: 17rem;
+  padding: 20rem;
+  margin-bottom: 20rem;
 }
 
 #user .divOrders .title {
-  height: 60rem;
-  line-height: 60rem;
-  opacity: 1;
   font-size: 16rem;
   font-family: PingFangSC, PingFangSC-Regular;
   font-weight: 500;
-  text-align: left;
-  color: #333333;
-  letter-spacing: 0;
-  border-bottom: 2px solid #efefef;
+  color: #333;
+  line-height: 22rem;
+  margin-bottom: 20rem;
 }
 
-#user .divOrders .timeStatus {
-  height: 46rem;
-  line-height: 16rem;
-  font-size: 14rem;
-  font-family: PingFangSC, PingFangSC-Regular;
-  font-weight: 400;
-  text-align: left;
-  color: #666666;
-  line-height: 20rem;
-  letter-spacing: 0;
+/* 订单卡片 */
+#user .divOrders .orderCard {
+  background: #fff;
+  border-radius: 8rem;
+  padding: 16rem;
+  border: 1px solid #f0f0f0;
+}
+
+#user .divOrders .orderHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2rem dashed #efefef;
+  margin-bottom: 12rem;
 }
 
-#user .divOrders .timeStatus span:first-child {
-  color: #333333;
+#user .divOrders .orderNumber {
+  font-size: 14rem;
+  font-family: PingFangSC, PingFangSC-Regular;
+  color: #666;
+}
+
+#user .divOrders .orderStatus {
+  padding: 4rem 8rem;
+  border-radius: 4rem;
+  font-size: 12rem;
+  font-family: PingFangSC, PingFangSC-Regular;
+  font-weight: bold;
+}
+
+#user .divOrders .status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+#user .divOrders .status-delivering {
+  background: #d4edda;
+  color: #155724;
+}
+
+#user .divOrders .status-delivered {
+  background: #cce5ff;
+  color: #0056b3;
+}
+
+#user .divOrders .status-completed {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+#user .divOrders .status-cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+#user .divOrders .timeStatus {
+  margin-bottom: 12rem;
+}
+
+#user .divOrders .time {
+  font-size: 12rem;
+  font-family: PingFangSC, PingFangSC-Regular;
+  color: #999;
 }
 
 #user .divOrders .dishList {
-  padding-top: 10rem;
-  padding-bottom: 11rem;
+  margin-bottom: 12rem;
 }
 
-#user .divOrders .dishList .item {
-  padding-top: 5rem;
-  padding-bottom: 5rem;
+#user .divOrders .dish {
   display: flex;
-  justify-content: space-between;
-  height: 20rem;
-  opacity: 1;
+  align-items: center;
+  margin-bottom: 8rem;
+}
+
+#user .divOrders .dish:last-child {
+  margin-bottom: 0;
+}
+
+#user .divOrders .dishImage {
+  width: 50rem;
+  height: 50rem;
+  border-radius: 4rem;
+  object-fit: cover;
+}
+
+#user .divOrders .dishInfo {
+  flex: 1;
+  margin-left: 12rem;
+}
+
+#user .divOrders .dishName {
   font-size: 14rem;
   font-family: PingFangSC, PingFangSC-Regular;
-  font-weight: 400;
-  text-align: left;
-  color: #666666;
-  line-height: 20rem;
-  letter-spacing: 0;
+  color: #333;
+  margin-bottom: 4rem;
+}
+
+#user .divOrders .dishPrice {
+  display: flex;
+  justify-content: space-between;
+  color: #ff6b35;
+  font-size: 14rem;
+  font-family: PingFangSC, PingFangSC-Regular;
+  font-weight: bold;
+}
+
+#user .divOrders .dishNum {
+  color: #666;
+  font-weight: normal;
 }
 
 #user .divOrders .result {
+  padding-top: 12rem;
+  border-top: 1px solid #f0f0f0;
+  margin-bottom: 12rem;
+}
+
+#user .divOrders .total {
   display: flex;
-  justify-content: flex-end;
-  height: 20rem;
-  opacity: 1;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#user .divOrders .total span {
   font-size: 14rem;
   font-family: PingFangSC, PingFangSC-Regular;
-  font-weight: 400;
-  text-align: left;
-  color: #666666;
-  line-height: 20rem;
+  color: #666;
 }
 
-#user .divOrders .result .price {
-  color: black;
+#user .divOrders .totalPrice {
+  color: #ff6b35 !important;
+  font-weight: bold !important;
 }
 
+/* 订单操作按钮区域 - 修复后的样式 */
+#user .divOrders .orderActions {
+  display: flex;
+  gap: 8rem;
+  margin-top: 12rem;
+  padding-top: 12rem;
+  border-top: 1px solid #f0f0f0;
+  justify-content: flex-end;
+}
+
+/* 所有按钮的基础样式 */
+#user .divOrders .orderActions .btn {
+  padding: 8rem 16rem;
+  border: 1px solid #ddd;
+  border-radius: 18rem;
+  background: #fff;
+  color: #666;
+  cursor: pointer;
+  font-size: 14rem;
+  font-family: PingFangSC, PingFangSC-Regular;
+  font-weight: 500;
+  text-align: center;
+  line-height: 36rem;
+  height: 36rem;
+  min-width: 80rem;
+  transition: all 0.3s;
+  display: inline-block;
+}
+
+/* 再来一单按钮 */
+#user .divOrders .orderActions .orderAgain {
+  background: #ff6b35;
+  color: #fff;
+  border-color: #ff6b35;
+}
+
+#user .divOrders .orderActions .orderAgain:hover {
+  background: #e55a2e;
+}
+
+/* 取消订单按钮 */
+#user .divOrders .orderActions .cancelOrder {
+  background: #fff;
+  color: #ff4757;
+  border-color: #ff4757;
+}
+
+#user .divOrders .orderActions .cancelOrder:hover {
+  background: #ff4757;
+  color: #fff;
+}
+
+/* 查看详情按钮 */
+#user .divOrders .orderActions .viewDetail {
+  background: #fff;
+  color: #333;
+  border-color: #ddd;
+}
+
+#user .divOrders .orderActions .viewDetail:hover {
+  background: #f5f5f5;
+}
+
+/* 旧的按钮样式 - 保留兼容性 */
 #user .divOrders .btn {
   margin-top: 20rem;
   display: flex;
@@ -224,6 +376,29 @@
   position: relative;
 }
 
+/* 无订单提示 */
+#user .noOrder {
+  text-align: center;
+  padding: 40rem 20rem;
+  color: #999;
+  background: #ffffff;
+  border-radius: 6rem;
+  margin-bottom: 20rem;
+}
+
+#user .noOrder img {
+  width: 120rem;
+  height: 120rem;
+  margin-bottom: 16rem;
+}
+
+#user .noOrder p {
+  font-size: 14rem;
+  font-family: PingFangSC, PingFangSC-Regular;
+  margin: 0;
+}
+
+/* 退出登录按钮 */
 #user .quitLogin {
   margin: 0 10rem 10rem 10rem;
   height: 50rem;
@@ -237,15 +412,95 @@
   text-align: center;
   color: #333333;
   line-height: 50rem;
+  cursor: pointer;
 }
 
-#user .divLinks .link-text {
-    font-size: 16rem;
+/* 取消订单确认弹窗 */
+.cancelModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
 }
 
-#user .divLinks .item span {
-    font-size: 16rem; /* 原为14rem，调大字体 */
-    font-family: PingFangSC, PingFangSC-Regular;
-    font-weight: 400;
-    color: #333;
+.modalContent {
+  background: #fff;
+  border-radius: 8rem;
+  padding: 24rem;
+  width: 300rem;
+  max-width: 90%;
+  margin: 0 20rem;
+}
+
+.modalTitle {
+  font-size: 18rem;
+  font-family: PingFangSC, PingFangSC-Regular;
+  font-weight: bold;
+  margin-bottom: 16rem;
+  text-align: center;
+  color: #333;
+}
+
+.modalMessage {
+  color: #666;
+  text-align: center;
+  margin-bottom: 24rem;
+  line-height: 1.5;
+  font-size: 14rem;
+  font-family: PingFangSC, PingFangSC-Regular;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12rem;
+}
+
+.modalActions .btn {
+  flex: 1;
+  height: 40rem;
+  line-height: 40rem;
+  border-radius: 20rem;
+  font-size: 14rem;
+  font-family: PingFangSC, PingFangSC-Regular;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+}
+
+.modalActions .btnCancel {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.modalActions .btnCancel:hover {
+  background: #e5e5e5;
+}
+
+.modalActions .btnConfirm {
+  background: #ff4757;
+  color: #fff;
+}
+
+.modalActions .btnConfirm:hover {
+  background: #e03e4a;
+}
+
+/* 响应式调整 */
+@media (max-width: 480px) {
+  #user .divOrders .orderActions {
+    flex-direction: column;
+    gap: 10rem;
+  }
+
+  #user .divOrders .orderActions .btn {
+    width: 100%;
+    min-width: auto;
+  }
 }

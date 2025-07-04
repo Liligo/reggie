@@ -15,7 +15,7 @@ function loginoutApi() {
 
 function sendMsgApi(data) {
     return $axios({
-        'url': 'http://localhost:8080/user/sendMsg',
+        'url': '/user/sendMsg',
         'method': 'post',
         data
     })

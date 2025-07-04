@@ -3,12 +3,15 @@
   // 创建axios实例
   const service = axios.create({
     // axios中请求配置有baseURL选项，表示请求URL公共部分
-    baseURL: '/',
+    baseURL: '',
     // 超时
     timeout: 10000
   })
   // request拦截器
   service.interceptors.request.use(config => {
+    // 调试信息
+    console.log('请求配置:', config.url, config.baseURL || '相对路径')
+
     // 是否需要设置 token
     // const isToken = (config.headers || {}).isToken === false
     // if (getToken() && !isToken) {
@@ -52,7 +55,7 @@
     },
     error => {
       let { message } = error;
-      if (message == "Network Error") {
+      if (message === "Network Error") {
         message = "后端接口连接异常";
       }
       else if (message.includes("timeout")) {
@@ -70,5 +73,8 @@
       return Promise.reject(error)
     }
   )
-  win.$axios = service
+  // 同时设置全局axios配置（防止其他地方直接使用axios）
+  axios.defaults.baseURL = ''
+  // 暴露实例
+  win.$axios = service
 })(window);

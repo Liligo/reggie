@@ -32,3 +32,12 @@ function orderAgainApi(data) {
       data
   })
 }
+
+// 取消订单
+function cancelOrderApi(params) {
+    return $axios({
+        'url': '/order/cancel',
+        'method': 'post',
+        'data': params
+    })
+}

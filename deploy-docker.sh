@@ -13,7 +13,7 @@ PROJECT_DIR="reggie" # 新增：用于存放源码的子目录
 ENV_FILE="prod.env"
 
 # 部署相关的配置
-UPLOAD_DIR="/usr/local/reggie/uploads" # 宿主机上用于存放上传文件的目录
+UPLOAD_DIR="/usr/local/reggie_project/uploads" # 宿主机上用于存放上传文件的目录
 HOST_PORT=8080
 CONTAINER_PORT=8080
 LOG_FILE="deploy.log"
@@ -103,5 +103,6 @@ check_status
 echo "=================================================="
 echo "部署成功！"
 echo "容器 ${CONTAINER_NAME} 已启动。"
+echo "查看运行日志：docker logs -f -t ${CONTAINER_NAME}"
 echo "访问地址: http://<你的服务器IP>:${HOST_PORT}"
 echo "=================================================="

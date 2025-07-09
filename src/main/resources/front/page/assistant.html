@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Reggie 智能助手</title>
+    <style>
+        /* 基础样式 */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+
+        /* 聊天容器 */
+        .chat-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 消息显示区域 */
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* 消息气泡 */
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+
+        .user-message {
+            justify-content: flex-end;
+        }
+
+        .assistant-message {
+            justify-content: flex-start;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+        }
+
+        .user-message .message-content {
+            background: #007bff;
+            color: white;
+        }
+
+        .assistant-message .message-content {
+            background: #e9ecef;
+            color: #212529;
+        }
+
+        /* 输入区域 */
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            gap: 10px;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            outline: none;
+        }
+
+        #send-btn {
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #send-btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="chat-container">
+    <div class="chat-messages" id="chat-messages">
+        <!-- 初始欢迎消息 -->
+        <div class="message assistant-message">
+            <div class="message-content">
+                您好！我是Reggie餐厅助手，请问有什么可以帮您？
+            </div>
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="user-input" placeholder="输入您的问题...">
+        <button id="send-btn" onclick="sendMessage()">发送</button>
+    </div>
+</div>
+
+<script>
+    // 移除原有的EventSource实现
+    let controller; // 用于中止请求
+
+    async function sendMessage() {
+        const input = document.getElementById('user-input');
+        const message = input.value.trim();
+        if (!message) return;
+
+        // 添加用户消息
+        const messagesDiv = document.getElementById('chat-messages');
+        const userMessage = document.createElement('div');
+        userMessage.className = 'message user-message';
+        userMessage.innerHTML = `<div class="message-content">${message}</div>`;
+        messagesDiv.appendChild(userMessage);
+
+        // 清空输入框并禁用按钮
+        input.value = '';
+        document.getElementById('send-btn').disabled = true;
+
+        // 创建新的AbortController
+        controller = new AbortController();
+
+        try {
+            const response = await fetch('/reggieAssistant/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    memoryId: "1", // 实际应用应从登录信息获取
+                    content: message
+                }),
+                signal: controller.signal
+            });
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder('utf-8');
+            let assistantMessageDiv = null;
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value);
+
+                if (!assistantMessageDiv) {
+                    assistantMessageDiv = document.createElement('div');
+                    assistantMessageDiv.className = 'message assistant-message';
+                    assistantMessageDiv.innerHTML = '<div class="message-content"></div>';
+                    messagesDiv.appendChild(assistantMessageDiv);
+                }
+
+                const contentDiv = assistantMessageDiv.querySelector('.message-content');
+                contentDiv.textContent += chunk;
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                console.error('请求失败:', error);
+            }
+        } finally {
+            document.getElementById('send-btn').disabled = false;
+        }
+    }
+
+    // 添加中止按钮逻辑（可选）
+    window.addEventListener('beforeunload', () => {
+        if (controller) {
+            controller.abort();
+        }
+    });
+</script>
+</body>
+</html>

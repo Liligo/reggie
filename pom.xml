@@ -159,6 +159,44 @@
 		    <version>2.1.0</version>
 		</dependency>
 
+		<!-- 添加 LangChain4j 依赖 -->
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-spring-boot-starter</artifactId>
+			<version>1.0.0-beta3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-community-dashscope-spring-boot-starter</artifactId>
+			<version>1.0.0-beta3</version>
+		</dependency>
+
+		<!-- 添加 MongoDB 依赖 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+		</dependency>
+
+		<!-- 添加流式输出相关依赖 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-reactor</artifactId>
+			<version>1.0.0-beta3</version>
+		</dependency>
+
+		<!-- 添加 pinecone 依赖 -->
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-pinecone</artifactId>
+			<version>1.0.0-beta3</version>
+		</dependency>
+
     </dependencies>
 
 	<build>

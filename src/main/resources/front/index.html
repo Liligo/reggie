@@ -25,7 +25,7 @@
       </div>
       <div class="divTitle">
         <div class="divStatic">
-          <img src="./images/logo.png"  class="logo"/>
+          <img src="./images/logo.png"  class="logo" @click="toAssistant"/>
           <div class="divDesc">
             <div class="divName">菩提阁餐厅</div>
             <div class="divSend">
@@ -594,9 +594,11 @@
                   this.$notify({ type:'warning', message:res.msg});
                 }
               }
-
+            },
+            //跳转到智能助手
+            toAssistant() {
+              window.location.href = '/front/page/assistant.html';
             }
-
           }
       })
   </script>

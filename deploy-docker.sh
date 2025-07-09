@@ -13,7 +13,8 @@ PROJECT_DIR="reggie" # 新增：用于存放源码的子目录
 ENV_FILE="prod.env"
 
 # 部署相关的配置
-UPLOAD_DIR="/usr/local/reggie_project/uploads" # 宿主机上用于存放上传文件的目录
+
+UPLOAD_DIR="${PROJECT_DIR}/src/main/java/com/liligo/reggie/imgs/"# 宿主机上用于存放上传文件的目录
 HOST_PORT=8080
 CONTAINER_PORT=8080
 LOG_FILE="deploy.log"

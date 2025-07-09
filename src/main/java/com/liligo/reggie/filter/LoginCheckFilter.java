@@ -13,7 +13,7 @@ import org.springframework.util.AntPathMatcher;
 import java.io.IOException;
 
 @Slf4j
-@WebFilter(filterName = "loginCheckFilter", urlPatterns = "/*")
+@WebFilter(filterName = "loginCheckFilter", urlPatterns = "/*", asyncSupported = true)
 public class LoginCheckFilter implements Filter {
 
     public static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
